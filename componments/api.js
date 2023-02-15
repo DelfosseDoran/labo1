@@ -1,5 +1,8 @@
-import { Alert, Pressable, Text, StyleSheet, View, Dimensions, Image ,TextInput} from 'react-native';
-
+import React, { useEffect, useState } from 'react';
+import { Alert, Pressable, Text, StyleSheet, View, Dimensions, Image, TextInput, TouchableOpacity } from 'react-native';
+import MapView from 'react-native-maps';
+import * as Battery from 'expo-battery';
+import { Camera, CameraType } from 'expo-camera';
 
 export default function ButtonEx() {
     const showModel = () => {
@@ -50,6 +53,66 @@ export function InformationEx() {
         <Text >Email Ardress</Text>
         <TextInput keyboardType='email-address' style={styles.input} /></View>)
 }
+export function MapEx() {
+    return (
+        <View>
+            <MapView style={styles.map}></MapView>
+        </View>
+    )
+}
+export function BatteryEx() {
+    const [batteryLevel, setBatteryLevel] = useState(0);
+    const getBatteryLevel = async () => {
+        try {
+
+            const batteryLevel = await Battery.getBatteryLevelAsync();
+            setBatteryLevel(batteryLevel);
+        } catch (e) {
+            console.log("Err batt", e)
+        }
+    }
+    const lissenToBatterychange = () => {
+        console.log("watch")
+        Battery.addBatteryLevelListener(event => {
+            console.log("event", event)
+        })
+    }
+    useEffect(() => {
+        getBatteryLevel();
+        lissenToBatterychange();
+    }, [])
+    return (
+        <>
+            <Text >Battery Level: {Math.round(batteryLevel * 100, 2)}%</Text>
+
+        </>
+    )
+}
+export function CameraEx() {
+    const [type, setType] = useState(CameraType.back);
+    // const [permission, requestPermission] = Camera.useCameraPermissions();
+    useEffect(() => {
+        Camera.requestCameraPermissionsAsync().then(Permissions => { console.log("Permissions", Permissions) })
+        // if (!permission) ...
+    }, []);
+    // if (!permission.granted) ...
+
+    function toggleCameraType() {
+        setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
+    }
+
+    return (
+        <View style={styles.container}>
+            <Camera style={styles.camera} type={type}>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.Button} onPress={toggleCameraType}>
+                        <Text style={styles.text}>Flip Camera</Text>
+                    </TouchableOpacity>
+                </View>
+            </Camera>
+        </View>
+    );
+}
 const styles = StyleSheet.create({
     input: {
         padding: 8,
@@ -65,21 +128,6 @@ const styles = StyleSheet.create({
         marginTop: 16,
         marginBottom: 32,
         // marginLeft:-24,
-    },
-    container: {
-        //elke view is flex
-        //elke view staat op flex direction: column 
-        flex: 1,//voledige ruimte
-        backgroundColor: '#eee',
-        // paddingHorizontal: 32,
-        // alignItems: 'center',
-        // justifyContent: 'center',
-    },
-    content: {
-        paddingHorizontal: 24,
-        paddingtop: 32,
-        paddingBottom: 32,
-        color: '#fff',
     },
     header: {
         fontSize: 24,
@@ -100,4 +148,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
     },
+    map: {
+        width: Dimensions.get('window').width - 48,
+        height: 500,
+        // backgroundColor: '#ccc',
+    },
+    camera: {
+        width: Dimensions.get('window').width - 48,
+        height: 500,
+    }
 });

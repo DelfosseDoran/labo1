@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // import { imgex } from './componments/api';
 
 //egen component
-import ButtonEx, { Imgex, InformationEx } from './componments/api';
+import ButtonEx, { Imgex, InformationEx, MapEx ,BatteryEx,CameraEx } from './componments/api';
 
 export default function App() {
 
@@ -29,6 +29,9 @@ export default function App() {
           <Text style={styles.header}>all my information</Text>
           <Text >wow this keybord dus't clip away</Text>
           <InformationEx/>
+          <MapEx/>
+          <BatteryEx/>
+          <CameraEx/>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
